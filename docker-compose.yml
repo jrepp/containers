@@ -1,0 +1,42 @@
+version: '2.0'
+
+
+services:
+    etcd:
+        build:
+            context: etcd
+        image: 'jrepp/etcd:latest'
+        networks:
+            - admin
+        ulimits:
+            nproc: 65535
+            nofile:
+                soft: 20000
+                hard: 40000
+
+    log:
+        build:
+            context: ./logstash
+        image: 'jrepp/log:latest'
+        networks:
+            - admin
+        volumes:
+            - cache
+    
+    front:
+        build:
+            context: ./front
+        image: 'jrepp/front:lastest'
+        networks:
+            - admin
+            - client
+
+networks:
+    admin:
+        driver: overlay
+    client:
+        driver: bridge
+
+
+volumes:
+    cache:
