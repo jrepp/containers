@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import etcd
 import sys
 import os
