@@ -58,7 +58,7 @@ class Desc(object):
                 "Invalid value: {0}='{1}', not in '{2}'".format(name, v, values))
 
 
-    def reflect(self):
+    def to_json(self):
         """
         Emit contents as JSON
         """
@@ -68,13 +68,19 @@ class Desc(object):
                 doc[k] = v
         return json.dumps(doc)
 
+    
+    def from_json(self, json_str):
+        doc = json.loads(json_str)
+        for k, v in doc.iteritems():
+            self.__setattr__(k, v)
+
 
     def build_uuid(self):
         """
         Generate the service UUID
         """
-        self.uuid = str(uuid.uuid1())
-        return self.uuid
+        self._uuid = str(uuid.uuid1())
+        return self._uuid
 
     def build_container_path_parts(self, context):
         """
@@ -82,7 +88,8 @@ class Desc(object):
         """
         parts = []
         parts.append(context.base_path)
-        parts.append('services')
+        parts.append(self.base_path())
+
         if self.region and self.site:
             parts.append(self.region)
             parts.append(self.site)
@@ -100,11 +107,11 @@ class Desc(object):
         """
         Generate the specific descriptor path
         """
-        if not self.uuid:
+        if not self._uuid:
             raise ValueError("Descriptor UUID not initialized")
 
         parts = self.build_container_path_parts(context) 
-        parts.append(self.uuid)
+        parts.append(self._uuid)
         self._path = '/'.join(map(str, parts))
         return self._path
 
