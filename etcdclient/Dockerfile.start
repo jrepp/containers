@@ -1,0 +1,10 @@
+FROM jrepp/etcdclient:latest
+
+ENV ETCD_ADDR etcd-master
+ENV ETCD_PORT 2379
+
+WORKDIR /client
+
+ADD start.py .
+
+ENTRYPOINT ["/usr/bin/python", "start.py"]
