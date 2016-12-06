@@ -13,7 +13,7 @@ class Service(Instance):
     
     def start(self):
         path = self.desc.path()
-        data = self.desc.reflect()
+        data = self.desc.to_json()
         self.read_or_write(path, data)
         self.lifecycle = Service.starting
 
