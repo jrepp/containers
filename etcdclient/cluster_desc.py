@@ -31,6 +31,11 @@ class ClusterDesc(Desc):
         self.partition_key = kwargs.get('partition_key')
         self.validate_init(context) 
 
+
+    def base_path(self):
+        return 'clusters'
+
+
     def validate_init(self, context):
         Desc.validate_init(self, context)
         self.check_required(REQUIRED)

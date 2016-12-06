@@ -39,6 +39,10 @@ class ServiceDesc(Desc):
         self.validate_init(context)
 
 
+    def base_path(self):
+        return 'services'
+
+
     def validate_init(self, context):
         Desc.validate_init(self, context)
 
