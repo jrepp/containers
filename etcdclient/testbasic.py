@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import time
 
@@ -11,7 +11,7 @@ import service_discovery as sd
 c = start.setup_client()
 ctx = context.Context(c)
 s = sdesc.test_service(ctx)
-c.write(s.path(), s.reflect(), ttl=3)
+c.write(s.path(), s.to_json(), ttl=3)
 #results = c.read('/services/global')
 
 while True:

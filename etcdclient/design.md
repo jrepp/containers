@@ -48,7 +48,7 @@ command-desc
     acknowledged
     pending
     duration
-    complated
+    completed
 
 command-structure
     commands/
