@@ -3,13 +3,13 @@
 import time
 
 import start
-import context
+import app
 import service_desc as sdesc
 import service_discovery as sd
 
 
 c = start.setup_client()
-ctx = context.Context(c)
+app = app.App(c)
 s = sdesc.test_service(ctx)
 c.write(s.path(), s.to_json(), ttl=3)
 #results = c.read('/services/global')

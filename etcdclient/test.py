@@ -5,7 +5,7 @@ import time
 
 from service import Service
 from cluster import Cluster
-from context import Context
+from app import App
 
 # Generators
 def random_ip():
@@ -26,7 +26,7 @@ def build_services(cluster, template, count):
     services = []
     for i in xrange(count):
         args = {
-            'context': cluster.context
+            'app': cluster.app
         }
         args.update(template)
         replacement = {}
@@ -39,13 +39,12 @@ def build_services(cluster, template, count):
         services.append(service)
     return services
 
-def build_test_services(etcd_client):
+def build_test_services(app):
     all_services = []
-    context = Context(etcd_client)
 
     # Generate the global cluster
     global_cluster = Cluster(
-            context=context,
+            app=app,
             name='global_test_cluster',
             min_count=1,
             max_count=3,
@@ -84,7 +83,7 @@ def build_test_services(etcd_client):
     for region_name in ['region_a', 'region_b', 'region_c']:
         # Create new cluster instance
         regional_cluster = Cluster(
-            context=context,
+            app=app,
             name='regional_test_cluster',
             region=region_name,
             min_count=1,
@@ -100,7 +99,7 @@ def build_test_services(etcd_client):
         # Generate a few sites
         for site_name in ['main', 'secondary']:
             site_cluster = Cluster(
-                    context=context,
+                    app=app,
                     name='site_test_cluster',
                     region=region_name,
                     site=site_name,
@@ -124,8 +123,8 @@ def run_services(services):
         for service in services:
             service.update()
 
-def test(etcd_client):
-    services = build_test_services(etcd_client)
+def test(app):
+    services = build_test_services(app)
     run_services(services)
 
 

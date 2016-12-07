@@ -28,7 +28,8 @@ def main():
     if not client:
         print 'usage: ETCD_ADDR=<addr> ETCD_PORT=port ./start.py'
         sys.exit(1)
-    _test.test(client)
+    with App("start", client) as app:
+        _test.test(app)
     
 if __name__ == '__main__': 
     main()
