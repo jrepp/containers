@@ -1,4 +1,3 @@
-import etcd
 import sys
 import random
 import time
@@ -7,21 +6,39 @@ from service import Service
 from cluster import Cluster
 from app import App
 
-# Generators
-def random_ip():
-    return '192.168.{0}.{1}'.format(
+def random_ip(subnet="192.168.0"):
+    """
+    Generate a random IP string in a subnet generating the two last parts 
+    of address as random
+    """
+    return '{0}.{0}.{1}'.format(
             random.randint(0, 255),
             random.randint(0, 255))
 
-def random_ports():
-    count = random.randint(1, 3)
+
+def random_ports(count=3, privileged=False):
+    """
+    Returns an array of random ports
+    """
+    count = random.randint(1, count)
     ports = []
+
+    if privileged:
+        base = 1
+    else:
+        base = 1025
+
     for i in xrange(count):
-        ports.append(random.randint(1, 65000))
+        ports.append(random.randint(base, 65535))
     return ports
 
+
 def build_services(cluster, template, count):
-    # FIXME: do this better :)
+    """
+    Use a template to build services in a cluster. The template can have value types
+    that are functions returning values. 
+    """
+    # FIXME: better way to compare function type
     function_type = type(lambda: None)
     services = []
     for i in xrange(count):
@@ -39,7 +56,11 @@ def build_services(cluster, template, count):
         services.append(service)
     return services
 
+
 def build_test_services(app):
+    """
+    Build a set of test services, use 'app' as the context
+    """
     all_services = []
 
     # Generate the global cluster
@@ -123,7 +144,7 @@ def run_services(services):
         for service in services:
             service.update()
 
-def test(app):
+def test_run_services(app):
     services = build_test_services(app)
     run_services(services)
 
