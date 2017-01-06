@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 
 import sys
+import unittest
 
-import command_runner as _cr
-import start as _start
-from app import App
+import command as _command
+import application as _application
 
-ctx = App('testcommand')
-runner = _cr.CommandRunner(u'commands', ctx)
-runner.add('foo')
-runner.add('bar')
-runner.update()
+class TestCommand(unittest.TestCase):
+    def test_single_command(self):
+        app = _application.default('testcommand')
+        runner = _command.Runner(u'commands', app)
+        runner.add('foo')
+        runner.add('bar')
+        runner.update()
 
+def suite():
+    tests = ['test_single_command']
+    return unittest.TestSuite(map(TestCommand, tests))

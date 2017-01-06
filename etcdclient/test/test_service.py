@@ -1,17 +1,26 @@
-#!/usr/bin/env python
+import unittest
 
-from app import App
+import application as _application
 
 template = """
 {
-    "type": "service"
+    "type": "service",
     "name": "test",
-    "service_class": "worker-a"
+    "service_class": "worker-a",
+    "provides": ["a", "b", "c"],
     "region": "jrepp-test2",
+    "ip": "192.168.0.10",
+    "ports": [5000,5001],
     "site": "main",
     "cluster": "test-cluster"
 }"""
 
-with App() as a:
-    svc = a.from_json(template)
-    a.update_loop()
+class TestSingleService(unittest.TestCase):
+    def test_from_template(self):
+        with _application.default() as app:
+            s = app.from_json(template)
+
+
+def suite():
+    tests = ['test_from_template']
+    return unittest.TestSuite(map(TestSingleService, tests))

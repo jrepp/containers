@@ -1,10 +1,11 @@
 import sys
 import random
 import time
+import unittest
 
-from service import Service
-from cluster import Cluster
-from app import App
+import service as _service
+import cluster as _cluster
+import application as _application
 
 def random_ip(subnet="192.168.0"):
     """
@@ -33,6 +34,19 @@ def random_ports(count=3, privileged=False):
     return ports
 
 
+def test_service(context):
+    """
+    Return the most basic service descriptor for a test
+    """
+    return _service.Descriptor(
+        context,
+        name='foo',
+        service_class='foo',
+        ip='192.168.0.2',
+        ports=[4242],
+        provides=['foo'])
+    
+
 def build_services(cluster, template, count):
     """
     Use a template to build services in a cluster. The template can have value types
@@ -52,7 +66,7 @@ def build_services(cluster, template, count):
             if type(v) is function_type:
                 replacement[k] = v()
         args.update(replacement)
-        service = Service(**args)
+        service = _service.Service(**args)
         services.append(service)
     return services
 
@@ -64,7 +78,7 @@ def build_test_services(app):
     all_services = []
 
     # Generate the global cluster
-    global_cluster = Cluster(
+    global_cluster = _cluster.Cluster(
             app=app,
             name='global_test_cluster',
             min_count=1,
@@ -103,7 +117,7 @@ def build_test_services(app):
     # Generate a few regions
     for region_name in ['region_a', 'region_b', 'region_c']:
         # Create new cluster instance
-        regional_cluster = Cluster(
+        regional_cluster = _cluster.Cluster(
             app=app,
             name='regional_test_cluster',
             region=region_name,
@@ -148,4 +162,7 @@ def test_run_services(app):
     services = build_test_services(app)
     run_services(services)
 
+
+def make_suite(cls):
+    suite = unittest.TestLoader().loadTestsFromTestCase(cls)
 

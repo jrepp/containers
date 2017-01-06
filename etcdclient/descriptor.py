@@ -8,7 +8,7 @@ SITE = 'site'
 
 SCOPES = [GLOBAL, REGIONAL, SITE]
 
-class Desc(object):
+class BaseDescriptor(object):
     def __init__(self):
         """
         Create a new descriptor, not valid till path and uuid calculated
@@ -29,12 +29,12 @@ class Desc(object):
         return self._uuid
 
 
-    def validate_init(self, context):
+    def validate_init(self, app):
         """
         Base descriptor validation
         """
         self.build_uuid()
-        self.build_path(context)
+        self.build_path(app)
         self.check_enum('scope', SCOPES)
 
 
@@ -82,12 +82,12 @@ class Desc(object):
         self._uuid = str(uuid.uuid1())
         return self._uuid
 
-    def build_container_path_parts(self, context):
+    def build_container_path_parts(self, app):
         """
         Generate the containing path of the descriptor"
         """
         parts = []
-        parts.append(context.base_path)
+        parts.append(app.base_path)
         parts.append(self.base_path())
 
         if self.region and self.site:
@@ -103,14 +103,14 @@ class Desc(object):
         return parts
 
 
-    def build_path(self, context):
+    def build_path(self, app):
         """
         Generate the specific descriptor path
         """
         if not self._uuid:
             raise ValueError("Descriptor UUID not initialized")
 
-        parts = self.build_container_path_parts(context) 
+        parts = self.build_container_path_parts(app) 
         parts.append(self._uuid)
         self._path = '/'.join(map(str, parts))
         return self._path

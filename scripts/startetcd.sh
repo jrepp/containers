@@ -1,26 +1,30 @@
 #!/bin/bash
 
-# Make sure the named containers are cleaned up
-docker stop etcd-master etcd-client
-docker rm etcd-master etcd-client
+BASEDIR=$(dirname "$0")
 
-# Start the local etcd listener container
+NAME=etcd-master
+ORG=jrepp
+VERSION=latest
+
+
+# Make sure the named containers are cleaned up
+docker stop ${NAME}
+docker rm ${NAME}
+
+if [ -x docker-machine ]; then 
+     IPADDR=$(docker-machine ip)
+else
+     IPADDR=$(${BASEDIR}/internalip.sh)
+fi
+
+# Start the local etcd listener container, ETCD_* variables are
+# used in place of command line arguments
 docker run -d \
     -p "2379:2379" \
     -p "2380:2380" \
-    -e "ETCD_ADVERTISE_CLIENT_URLS=http://$(docker-machine ip):2379" \
+    -e "ETCD_ADVERTISE_CLIENT_URLS=http://${IPADDR}:2379" \
     -h "etcd" \
-    --name etcd-master \
-    jrepp/etcd:latest
+    --name ${NAME} \
+    ${ORG}/etcd:${VERSION}
 
-# Start the local etcd client container
-docker run -it \
-    --rm \
-    -e "ETCDCTL_API=3" \
-    -e "ETCDCTL_ENDPOINTS=etcd-master:2379" \
-    -h "etcd-client" \
-    -v "/home/jrepp/containers/etcdclient:/code" \
-    --link etcd-master \
-    --name etcd-client \
-    jrepp/etcdclient:latest
 

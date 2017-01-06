@@ -1,32 +1,42 @@
-#!/usr/bin/python
+import unittest
 import inspect
+
+def output(s):
+    #print s
+    pass
+
 
 def stacktrace(stack):
     for frame in stack:
-        print frame
+        output(frame)
         for l in frame[0].f_locals:
-            print '  locals:', l 
+            output('  locals: {0}'.format(l))
+
 
 def definer(*args):
-    print 'definer:'
-    print '  ', args
+    output('definer:')
+    output('  {0}'.format(args))
     stacktrace(inspect.stack())
 
+
 def emit(*args):
-    print 'emit:'
+    output('emit:')
     for k in args:
-        print k
+        output(k)
     stacktrace(inspect.stack())
     return definer
 
-class Test(object):
-
+        
+class TestProperty(unittest.TestCase):
     @emit('foo')
     def property_c(self):
         pass
 
-    def __init__(self):
-        self.propert_a = 'a'
-        self.propert_b = 'a'
+    def test_self(self):
+        pass
 
-t = Test()
+
+def suite():
+    tests = ['test_self']
+    return unittest.TestSuite(map(TestProperty, tests))
+
