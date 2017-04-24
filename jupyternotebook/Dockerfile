@@ -14,6 +14,8 @@ RUN rm -f Anaconda3-4.3.1-Linux-x86_64.sh
 
 EXPOSE 8888
 
+RUN mkdir /notebooks
 ADD jupyter_notebook_config.py .
+ADD start_notebook.sh .
 
-ENTRYPOINT ["/anaconda3/bin/jupyter-notebook", "--config=jupyter_notebook_config.py"]
+ENTRYPOINT ["/start_notebook.sh"]
